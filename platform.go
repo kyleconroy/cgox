@@ -33,25 +33,25 @@ var (
 	}
 
 	Platforms_1_0 = []Platform{
-		{"darwin", "386"},
+		//{"darwin", "386"},
 		{"darwin", "amd64"},
-		{"linux", "386"},
+		//{"linux", "386"},
 		{"linux", "amd64"},
-		{"linux", "arm"},
-		{"freebsd", "386"},
-		{"freebsd", "amd64"},
-		{"openbsd", "386"},
-		{"openbsd", "amd64"},
-		{"windows", "386"},
+		//{"linux", "arm"},
+		//{"freebsd", "386"},
+		//{"freebsd", "amd64"},
+		//{"openbsd", "386"},
+		//{"openbsd", "amd64"},
+		//{"windows", "386"},
 		{"windows", "amd64"},
 	}
 
 	Platforms_1_1 = append(Platforms_1_0, []Platform{
-		{"freebsd", "arm"},
-		{"netbsd", "386"},
-		{"netbsd", "amd64"},
-		{"netbsd", "arm"},
-		{"plan9", "386"},
+		//{"freebsd", "arm"},
+		//{"netbsd", "386"},
+		//{"netbsd", "amd64"},
+		//{"netbsd", "arm"},
+		//{"plan9", "386"},
 	}...)
 )
 
