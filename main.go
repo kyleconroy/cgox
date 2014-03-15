@@ -16,7 +16,7 @@ func main() {
 }
 
 func realMain() int {
-	var buildToolchain bool
+	var buildToolchain, rebuildToolchain bool
 	var ldflags string
 	var outputTpl string
 	var parallel int
@@ -31,6 +31,7 @@ func realMain() int {
 	flags.StringVar(&outputTpl, "output", "{{.Dir}}_{{.OS}}_{{.Arch}}", "output path")
 	flags.IntVar(&parallel, "parallel", -1, "parallelization factor")
 	flags.BoolVar(&buildToolchain, "build-toolchain", false, "build toolchain")
+	flags.BoolVar(&rebuildToolchain, "rebuild-toolchain", false, "rebuild toolchain")
 	flags.BoolVar(&verbose, "verbose", false, "verbose")
 	if err := flags.Parse(os.Args[1:]); err != nil {
 		flags.Usage()
@@ -44,7 +45,11 @@ func realMain() int {
 	}
 
 	if buildToolchain {
-		return mainBuildToolchain(parallel, platformFlag, verbose)
+		return mainBuildToolchain(parallel, platformFlag, false, verbose)
+	}
+
+	if rebuildToolchain {
+		return mainBuildToolchain(parallel, platformFlag, true, verbose)
 	}
 
 	if _, err := exec.LookPath("go"); err != nil {

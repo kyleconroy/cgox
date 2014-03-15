@@ -12,8 +12,20 @@ import (
 	"sync"
 )
 
+// exists returns whether the given file or directory exists or not
+func exists(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return false, err
+}
+
 // The "main" method for when the toolchain build is requested.
-func mainBuildToolchain(parallel int, platformFlag PlatformFlag, verbose bool) int {
+func mainBuildToolchain(parallel int, platformFlag PlatformFlag, rebuild bool, verbose bool) int {
 	if _, err := exec.LookPath("go"); err != nil {
 		fmt.Fprintf(os.Stderr, "You must have Go already built for your native platform\n")
 		fmt.Fprintf(os.Stderr, "and the `go` binary on the PATH to build toolchains.\n")
@@ -55,7 +67,7 @@ func mainBuildToolchain(parallel int, platformFlag PlatformFlag, verbose bool) i
 	for _, platform := range platforms {
 		wg.Add(1)
 		go func(platform Platform) {
-			err := buildToolchain(&wg, semaphore, root, platform, verbose)
+			err := buildToolchain(&wg, semaphore, root, platform, rebuild, verbose)
 			if err != nil {
 				errorLock.Lock()
 				defer errorLock.Unlock()
@@ -76,11 +88,11 @@ func mainBuildToolchain(parallel int, platformFlag PlatformFlag, verbose bool) i
 	return 0
 }
 
-func buildToolchain(wg *sync.WaitGroup, semaphore chan int, root string, platform Platform, verbose bool) error {
+func buildToolchain(wg *sync.WaitGroup, semaphore chan int, root string, platform Platform, rebuild bool, verbose bool) error {
 	defer wg.Done()
 	semaphore <- 1
 	defer func() { <-semaphore }()
-	fmt.Printf("--> Toolchain: %s\n", platform.String())
+	fmt.Printf("--> Go Toolchain: %s\n", platform.String())
 
 	scriptName := "make.bash"
 	if runtime.GOOS == "windows" {
@@ -98,6 +110,13 @@ func buildToolchain(wg *sync.WaitGroup, semaphore chan int, root string, platfor
 		"GOOS="+platform.OS)
 	cmd.Stderr = &stderr
 	cmd.Stdout = &stdout
+
+	platformPath := filepath.Join(root, "pkg", "tool", platform.OS+"_"+platform.Arch)
+	platformExists, _ := exists(platformPath)
+
+	if platformExists && !rebuild {
+		return nil
+	}
 
 	if verbose {
 		// In verbose mode, we output all stdout to the console.

@@ -47,11 +47,11 @@ var (
 	}
 
 	Platforms_1_1 = append(Platforms_1_0, []Platform{
-		//{"freebsd", "arm"},
-		//{"netbsd", "386"},
-		//{"netbsd", "amd64"},
-		//{"netbsd", "arm"},
-		//{"plan9", "386"},
+	//{"freebsd", "arm"},
+	//{"netbsd", "386"},
+	//{"netbsd", "amd64"},
+	//{"netbsd", "arm"},
+	//{"plan9", "386"},
 	}...)
 )
 
